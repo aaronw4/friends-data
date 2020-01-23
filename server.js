@@ -1,9 +1,10 @@
 const express = require('express');
-const bodyParser = require('body-parser');
+
+const server = express();
+
+server.use(express.json());
+
 const cors = require('cors');
-require('dotenv').config();
-const port = process.env.PORT;
-const app = express();
 const token =
   'esfeyJ1c2VySWQiOiJiMDhmODZhZi0zNWRhLTQ4ZjItOGZhYi1jZWYzOTA0NUIhkufemQifQ';
 
@@ -48,9 +49,7 @@ let friends = [
   }
 ];
 
-app.use(bodyParser.json());
-
-app.use(cors());
+server.use(cors());
 
 function authenticator(req, res, next) {
   const { authorization } = req.headers;
@@ -61,7 +60,7 @@ function authenticator(req, res, next) {
   }
 }
 
-app.post('/api/login', (req, res) => {
+server.post('/api/login', (req, res) => {
   const { username, password } = req.body;
   if (username === 'Lambda School' && password === 'i<3Lambd4') {
     req.loggedIn = true;
@@ -75,13 +74,13 @@ app.post('/api/login', (req, res) => {
   }
 });
 
-app.get('/api/friends', authenticator, (req, res) => {
+server.get('/api/friends', authenticator, (req, res) => {
   setTimeout(() => {
     res.send(friends);
   }, 1000);
 });
 
-app.get('/api/friends/:id', authenticator, (req, res) => {
+server.get('/api/friends/:id', authenticator, (req, res) => {
   const friend = friends.find(f => f.id == req.params.id);
 
   if (friend) {
@@ -91,7 +90,7 @@ app.get('/api/friends/:id', authenticator, (req, res) => {
   }
 });
 
-app.post('/api/friends', authenticator, (req, res) => {
+server.post('/api/friends', authenticator, (req, res) => {
   const friend = { id: getNextId(), ...req.body };
 
   friends = [...friends, friend];
@@ -99,7 +98,7 @@ app.post('/api/friends', authenticator, (req, res) => {
   res.send(friends);
 });
 
-app.put('/api/friends/:id', authenticator, (req, res) => {
+server.put('/api/friends/:id', authenticator, (req, res) => {
   const { id } = req.params;
 
   const friendIndex = friends.findIndex(f => f.id == id);
@@ -118,7 +117,7 @@ app.put('/api/friends/:id', authenticator, (req, res) => {
   }
 });
 
-app.delete('/api/friends/:id', authenticator, (req, res) => {
+server.delete('/api/friends/:id', authenticator, (req, res) => {
   const { id } = req.params;
 
   friends = friends.filter(f => f.id !== Number(id));
@@ -130,6 +129,4 @@ function getNextId() {
   return nextId++;
 }
 
-app.listen(port, () => {
-  console.log(`server listening on port ${port}`);
-});
+
