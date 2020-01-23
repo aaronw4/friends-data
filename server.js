@@ -1,10 +1,11 @@
 const express = require('express');
+const cors = require('cors');
 
 const server = express();
 
 server.use(express.json());
+server.use(cors());
 
-const cors = require('cors');
 const token =
   'esfeyJ1c2VySWQiOiJiMDhmODZhZi0zNWRhLTQ4ZjItOGZhYi1jZWYzOTA0NUIhkufemQifQ';
 
@@ -49,7 +50,7 @@ let friends = [
   }
 ];
 
-server.use(cors());
+
 
 function authenticator(req, res, next) {
   const { authorization } = req.headers;
@@ -129,4 +130,5 @@ function getNextId() {
   return nextId++;
 }
 
+module.exports = server;
 
